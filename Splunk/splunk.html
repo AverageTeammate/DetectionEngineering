@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Splunk Queries</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <div class="header">
+    <h1>Splunk Detection Queries</h1>
+    <a href="../index.html" class="back-btn">← Back to Home</a>
+  </div>
+
+  <div class="card-grid">
+    <div class="card">
+      <details>
+        <summary><h2>📊 Notable Events - 30 Days</h2></summary>
+        <button class="copy-btn" data-target="q1">Copy</button>
+        <pre id="q1">index=notable sourcetype=stash 
+| eval search_name=replace(search_name," - Rule", "")
+| timechart count by search_name limit=100</pre>
+      </details>
+    </div>
+
+    <div class="card">
+      <details>
+        <summary><h2>📅 Notable Events - 24hr</h2></summary>
+        <button class="copy-btn" data-target="q2">Copy</button>
+        <pre id="q2">index=notable sourcetype=stash 
+| eval search_name=replace(search_name," - Rule", "")
+| timechart span=1h count by search_name limit=100</pre>
+      </details>
+    </div>
+
+    <div class="card">
+      <details>
+        <summary><h2>🚨 RBA Alerts - 30 Days</h2></summary>
+        <button class="copy-btn" data-target="q3">Copy</button>
+        <pre id="q3">index=risk sourcetype=stash 
+| eval search_name=replace(search_name," - Rule", "")
+| timechart count by search_name limit=100</pre>
+      </details>
+    </div>
+
+    <div class="card">
+      <details>
+        <summary><h2>🔥 Top Notables - 24hr</h2></summary>
+        <button class="copy-btn" data-target="q4">Copy</button>
+        <pre id="q4">| `es_notable_events`
+| search timeDiff_type=current
+| stats sparkline(sum(count),30m) as sparkline, sum(count) as count by rule_name
+| sort 100 - count</pre>
+      </details>
+    </div>
+
+    <div class="card">
+      <details>
+        <summary><h2>🕒 Logging Delays</h2></summary>
+        <button class="copy-btn" data-target="q5">Copy</button>
+        <pre id="q5">| tstats latest(_time) as Last latest(_indextime) as indextime WHERE index IN ($your.index.names.here$) BY index,sourcetype
+| eval delay=(indextime - Last)
+| eval delay=round((delay/60/60),3)
+| search sourcetype IN ($your.sourcetype.names.here$)
+| eval age=now()-Last
+| eval hours_ago=round((age/60/60),1)
+| eval Last=strftime(Last,"%H:%M:%S, %m/%d/%Y")
+| rename Last as "Last Event Indexed At:", "index" as "Index"
+| stats values("Last Event Indexed At:") as "Last Event Indexed At:", values(hours_ago) as hours_ago, values(delay) as indexing_delay by Index,sourcetype
+| fillnull value=more_than_24hr hours_ago
+| fillnull value=unknown indexing_delay
+| sort - hours_ago indexing_delay
+| search NOT Index=testing</pre>
+      </details>
+    </div>
+
+    <div class="card">
+      <details>
+        <summary><h2>🔐 Lockouts & Sign-ins</h2></summary>
+        <button class="copy-btn" data-target="q6">Copy</button>
+        <pre id="q6">index IN ($your.windows.index$) sourcetype=WinEventLog EventCode=4625 OR EventCode=4740
+| eval lockout_user=if((EventCode="4740"),user,0),failed_user=if((EventCode="4625"),user,0)
+| timechart span=1h dc(lockout_user) as lockout, dc(failed_user) as failure</pre>
+      </details>
+    </div>
+
+    <div class="card">
+      <details>
+        <summary><h2>🧠 Risk Event Search</h2></summary>
+        <button class="copy-btn" data-target="q7">Copy</button>
+        <pre id="q7">index=risk sourcetype=stash risk_object=$risk_object$
+| stats earliest(_time) as start_time, latest(_time) as end_time, values(risk_message) as risk_message, values(savedsearch_description) as description, sum(risk_score) as risk_score_total, values(*) as * count by risk_object,source
+| `security_content_ctime(start_time)`
+| `security_content_ctime(end_time)`
+| eval hostname=mvappend(ComputerName,orig_host,hostname)
+| eval action=mvappend(ActionTaken,action)
+| eval user=mvappend(user_identity, user, User)
+| eval src_ip=mvappend(Client_Address, src_ip, Source_Network_Address)</pre>
+      </details>
+    </div>
+
+    <div class="card">
+      <details>
+        <summary><h2>🌐 GlobalProtect Sign-ins</h2></summary>
+        <button class="copy-btn" data-target="q8">Copy</button>
+        <pre id="q8">index=palo sourcetype=pan:globalprotect status=* src_user=$user$ src_ip=$IP$
+| lookup asn_db range as src_ip OUTPUT asn, company
+| iplocation src_ip
+| fillnull value=null machine_name
+| rex field=src_user mode=sed "$your.regex.expression.here$"
+| stats values(company) as company, values(Country) as Country, values(stage) as stage, count(eval(status="success")) as success, count(eval(status="failure")) as failure, values(client_os_ver) as os_version, values(client_ver) as client_ver count by src_user, src_ip, machine_name, _time</pre>
+      </details>
+    </div>
+  </div>
+
+  <script>
+    const copyButtons = document.querySelectorAll('.copy-btn');
+    copyButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const targetId = btn.getAttribute('data-target');
+        const text = document.getElementById(targetId).innerText;
+        navigator.clipboard.writeText(text).then(() => {
+          btn.textContent = 'Copied!';
+          setTimeout(() => { btn.textContent = 'Copy'; }, 1500);
+        });
+      });
+    });
+  </script>
+</body>
+</html>
