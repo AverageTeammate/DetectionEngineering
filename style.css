@@ -49,6 +49,7 @@ body {
   color: #eee;
   position: relative;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  text-align: center;
 }
 
 .card:hover {
@@ -142,8 +143,10 @@ body {
 }
 
 .platform-card img {
-  width: 80px;
-  height: 80px;
+  width: 100px;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
   margin-bottom: 15px;
 }
 
