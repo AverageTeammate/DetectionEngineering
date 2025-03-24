@@ -18,6 +18,7 @@
       <option value="all">All Categories</option>
       <option value="notable">Notable Events</option>
       <option value="rba">RBA Alerts</option>
+      <option value="health">Health Checks</option>
     </select>
   </div>
 
@@ -30,6 +31,20 @@
       </tr>
     </thead>
     <tbody id="queryTableBody">
+      <!-- Health Checks Events -->
+      <tr data-category="health">
+        <td>⏱️ Health Checks</td>
+        <td>Easily Check Cron Schedule in a Bar Graph</td>
+        <td><button class="expand-btn" onclick="toggleQuery('q4')">View</button></td>
+      </tr>
+      <tr class="query-row" id="q4">
+        <td colspan="3">
+          <button class="copy-btn" onclick="copyToClipboard('query4')">Copy</button>
+          <pre id="query4">index=_internal sourcetype=scheduler   host=YOURHOST* OR host=YOUROTHERHOST* app=SplunkEnterpriseSecuritySuite status=success 
+| timechart span=1m count by savedsearch_name limit=200</pre>
+        </td>
+      </tr>
+
       <!-- Notable Events -->
       <tr data-category="notable">
         <td>🔥 Notable Events</td>
