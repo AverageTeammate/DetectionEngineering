@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Splunk Threat Hunting</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="header">
+    <h1>🕵️ Threat Hunting Queries</h1>
+    <a href="splunk.html" class="back-btn">← Back to Categories</a>
+  </div>
+
+  <div class="search-container">
+    <input type="text" id="searchBar" placeholder="🔍 Search queries..." onkeyup="filterQueries()">
+    <select id="filterCategory" onchange="filterQueries()">
+      <option value="all">All Categories</option>
+      <option value="auth">Authentication</option>
+      <option value="networking">Networking</option>
+    </select>
+  </div>
+
+  <table class="query-table">
+    <thead>
+      <tr>
+        <th>Category</th>
+        <th>Description</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="queryTableBody">
+      <!-- Authentication -->
+      <tr data-category="auth">
+        <td>🔑 Authentication</td>
+        <td>Account lockout and failure to sign in</td>
+        <td><button class="expand-btn" onclick="toggleQuery('q4')">View</button></td>
+      </tr>
+      <tr class="query-row" id="q4">
+        <td colspan="3">
+          <button class="copy-btn" onclick="copyToClipboard('query4')">Copy</button>
+          <pre id="query4">index IN ($your.windows.index$) sourcetype=WinEventLog EventCode=4625 OR EventCode=4740
+| eval lockout_user=if((EventCode="4740"),user,0),failed_user=if((EventCode="4625"),user,0)
+| timechart span=1h dc(lockout_user) as lockout, dc(failed_user) as failure</pre>
+        </td>
+      </tr>
+
+      <!-- Networking -->
+      <tr data-category="networking">
+        <td>🌐 GlobalProtect</td>
+        <td>GlobalProtect Sign-in Logs</td>
+        <td><button class="expand-btn" onclick="toggleQuery('q8')">View</button></td>
+      </tr>
+      <tr class="query-row" id="q8">
+        <td colspan="3">
+          <button class="copy-btn" onclick="copyToClipboard('query8')">Copy</button>
+          <pre id="query8">index=palo sourcetype=pan:globalprotect status=*  src_user=$user$ src_ip=$IP$
+| lookup asn_db range as src_ip OUTPUT asn, company 
+| iplocation src_ip
+| fillnull value=null machine_name
+| rex field=src_user mode=sed "$your.regex.expression.here$"
+| stats values(company) as company, values(Country) as Country, values(stage) as stage, count(eval(status="success")) as success, count(eval(status="failure")) as failure, values(client_os_ver) as os_version, values(client_ver) as client_ver count by src_user, src_ip, machine_name, _time
+| table _time, src_user, src_ip, company, Country, machine_name, stage, success, failure, os_version, client_ver
+| search $company$</pre>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <script>
+    function filterQueries() {
+      const search = document.getElementById("searchBar").value.toLowerCase();
+      const category = document.getElementById("filterCategory").value;
+      const rows = document.querySelectorAll(".query-table tbody tr");
+      
+      rows.forEach(row => {
+        const text = row.innerText.toLowerCase();
+        const rowCategory = row.getAttribute("data-category");
+        
+        if ((text.includes(search) || search === "") && (category === "all" || rowCategory === category)) {
+          row.style.display = "";
+        } else {
+          row.style.display = "none";
+        }
+      });
+    }
+
+    function toggleQuery(id) {
+      const queryRow = document.getElementById(id);
+      queryRow.style.display = queryRow.style.display === "table-row" ? "none" : "table-row";
+    }
+
+    function copyToClipboard(id) {
+      const text = document.getElementById(id).innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        alert("Query copied to clipboard!");
+      });
+    }
+  </script>
+</body>
+</html>

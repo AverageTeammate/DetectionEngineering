@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Splunk Auditing & Health Checks</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="header">
+    <h1>🩺 Auditing & Health Checks</h1>
+    <a href="splunk.html" class="back-btn">← Back to Categories</a>
+  </div>
+
+  <div class="search-container">
+    <input type="text" id="searchBar" placeholder="🔍 Search queries..." onkeyup="filterQueries()">
+    <select id="filterCategory" onchange="filterQueries()">
+      <option value="all">All Categories</option>
+      <option value="notable">Notable Events</option>
+      <option value="rba">RBA Alerts</option>
+    </select>
+  </div>
+
+  <table class="query-table">
+    <thead>
+      <tr>
+        <th>Category</th>
+        <th>Description</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="queryTableBody">
+      <!-- Notable Events -->
+      <tr data-category="notable">
+        <td>🔥 Notable Events</td>
+        <td>Notable Events over 30 days</td>
+        <td><button class="expand-btn" onclick="toggleQuery('q1')">View</button></td>
+      </tr>
+      <tr class="query-row" id="q1">
+        <td colspan="3">
+          <button class="copy-btn" onclick="copyToClipboard('query1')">Copy</button>
+          <pre id="query1">index=notable sourcetype=stash 
+| eval search_name=replace(search_name," - Rule", "")
+| timechart count by search_name limit=100</pre>
+        </td>
+      </tr>
+
+      <tr data-category="notable">
+        <td>🔥 Notable Events</td>
+        <td>Notable Events over 24 hours</td>
+        <td><button class="expand-btn" onclick="toggleQuery('q2')">View</button></td>
+      </tr>
+      <tr class="query-row" id="q2">
+        <td colspan="3">
+          <button class="copy-btn" onclick="copyToClipboard('query2')">Copy</button>
+          <pre id="query2">index=notable sourcetype=stash 
+| eval search_name=replace(search_name," - Rule", "")
+| timechart span=1h count by search_name limit=100</pre>
+        </td>
+      </tr>
+
+      <!-- RBA -->
+      <tr data-category="rba">
+        <td>🛡️ RBA Alerts</td>
+        <td>RBA Alerts over 30 days</td>
+        <td><button class="expand-btn" onclick="toggleQuery('q3')">View</button></td>
+      </tr>
+      <tr class="query-row" id="q3">
+        <td colspan="3">
+          <button class="copy-btn" onclick="copyToClipboard('query3')">Copy</button>
+          <pre id="query3">index=risk sourcetype=stash 
+| eval search_name=replace(search_name," - Rule", "")
+| timechart count by search_name limit=100</pre>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <script>
+    function filterQueries() {
+      const search = document.getElementById("searchBar").value.toLowerCase();
+      const category = document.getElementById("filterCategory").value;
+      const rows = document.querySelectorAll(".query-table tbody tr");
+      
+      rows.forEach(row => {
+        const text = row.innerText.toLowerCase();
+        const rowCategory = row.getAttribute("data-category");
+        
+        if ((text.includes(search) || search === "") && (category === "all" || rowCategory === category)) {
+          row.style.display = "";
+        } else {
+          row.style.display = "none";
+        }
+      });
+    }
+
+    function toggleQuery(id) {
+      const queryRow = document.getElementById(id);
+      queryRow.style.display = queryRow.style.display === "table-row" ? "none" : "table-row";
+    }
+
+    function copyToClipboard(id) {
+      const text = document.getElementById(id).innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        alert("Query copied to clipboard!");
+      });
+    }
+  </script>
+</body>
+</html>

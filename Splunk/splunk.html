@@ -3,141 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Splunk Queries</title>
-  <link rel="stylesheet" href="style.css">
+  <title>Splunk Categories</title>
+  <link rel="stylesheet" href="../style.css">
 </head>
 <body>
   <div class="header">
-    <h1>Splunk Detection Queries</h1>
+    <h1>Splunk Detection Categories</h1>
     <a href="../index.html" class="back-btn">← Back to Home</a>
   </div>
 
-  <div class="search-container">
-    <input type="text" id="searchBar" placeholder="🔍 Search queries..." onkeyup="filterQueries()">
-    <select id="filterCategory" onchange="filterQueries()">
-      <option value="all">All Categories</option>
-      <option value="notable">Notable Events</option>
-      <option value="rba">RBA Alerts</option>
-      <option value="auth">Authentication</option>
-      <option value="networking">Networking</option>
-    </select>
+  <div class="card-grid">
+    <a class="platform-card" href="splunk_auditing.html">
+      <h3>🩺 Auditing & Health Checks</h3>
+      <p>Check correlation search health, RBA activity, log ingestion, and visibility gaps</p>
+    </a>
+    <a class="platform-card" href="splunk_threathunting.html">
+      <h3>🕵️ Threat Hunting</h3>
+      <p>Investigative SPLs, anomaly detection, TTPs, and suspicious behavior analysis</p>
+    </a>
   </div>
-
-  <table class="query-table">
-    <thead>
-      <tr>
-        <th>Category</th>
-        <th>Description</th>
-        <th>Action</th>
-      </tr>
-    </thead>
-    <tbody id="queryTableBody">
-      <tr data-category="notable">
-        <td>🔥 Notable Events</td>
-        <td>Notable Events over 30 days - Column Chart</td>
-        <td><button class="expand-btn" onclick="toggleQuery('q1')">View</button></td>
-      </tr>
-      <tr class="query-row" id="q1">
-        <td colspan="3">
-          <button class="copy-btn" onclick="copyToClipboard('query1')">Copy</button>
-          <pre id="query1">index=notable sourcetype=stash 
-| eval search_name=replace(search_name," - Rule", "")
-| timechart count by search_name limit=100</pre>
-        </td>
-      </tr>
-      
-      <tr data-category="notable">
-        <td>🔥 Notable Events</td>
-        <td>Notable Events over 24hr - Column Chart</td>
-        <td><button class="expand-btn" onclick="toggleQuery('q2')">View</button></td>
-      </tr>
-      <tr class="query-row" id="q2">
-        <td colspan="3">
-          <button class="copy-btn" onclick="copyToClipboard('query2')">Copy</button>
-          <pre id="query2">index=notable sourcetype=stash 
-| eval search_name=replace(search_name," - Rule", "")
-| timechart span=1h count by search_name limit=100</pre>
-        </td>
-      </tr>
-      
-      <tr data-category="rba">
-        <td>🛡️ RBA Alerts</td>
-        <td>RBA Alerts over 30 days - Column Chart</td>
-        <td><button class="expand-btn" onclick="toggleQuery('q3')">View</button></td>
-      </tr>
-      <tr class="query-row" id="q3">
-        <td colspan="3">
-          <button class="copy-btn" onclick="copyToClipboard('query3')">Copy</button>
-          <pre id="query3">index=risk sourcetype=stash 
-| eval search_name=replace(search_name," - Rule", "")
-| timechart count by search_name limit=100</pre>
-        </td>
-      </tr>
-      
-      <tr data-category="auth">
-        <td>🔑 Authentication</td>
-        <td>Account lockout and failure to sign in</td>
-        <td><button class="expand-btn" onclick="toggleQuery('q4')">View</button></td>
-      </tr>
-      <tr class="query-row" id="q4">
-        <td colspan="3">
-          <button class="copy-btn" onclick="copyToClipboard('query4')">Copy</button>
-          <pre id="query4">index IN ($your.windows.index$) sourcetype=WinEventLog EventCode=4625 OR EventCode=4740
-| eval lockout_user=if((EventCode="4740"),user,0),failed_user=if((EventCode="4625"),user,0)
-| timechart span=1h dc(lockout_user) as lockout, dc(failed_user) as failure</pre>
-        </td>
-      </tr>
-      
-      <tr data-category="networking">
-        <td>🌐 GlobalProtect</td>
-        <td>GlobalProtect Sign-in Logs</td>
-        <td><button class="expand-btn" onclick="toggleQuery('q8')">View</button></td>
-      </tr>
-      <tr class="query-row" id="q8">
-        <td colspan="3">
-          <button class="copy-btn" onclick="copyToClipboard('query8')">Copy</button>
-          <pre id="query8">index=palo sourcetype=pan:globalprotect status=*  src_user=$user$ src_ip=$IP$
-| lookup asn_db range as src_ip OUTPUT asn, company 
-| iplocation src_ip
-| fillnull value=null machine_name
-| rex field=src_user mode=sed "$your.regex.expression.here$"
-| stats values(company) as company, values(Country) as Country, values(stage) as stage, count(eval(status="success")) as success, count(eval(status="failure")) as failure, values(client_os_ver) as os_version, values(client_ver) as client_ver count by src_user, src_ip, machine_name, _time
-| table _time, src_user, src_ip, company, Country, machine_name, stage, success, failure, os_version, client_ver
-| search $company$</pre>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-
-  <script>
-    function filterQueries() {
-      const search = document.getElementById("searchBar").value.toLowerCase();
-      const category = document.getElementById("filterCategory").value;
-      const rows = document.querySelectorAll(".query-table tbody tr");
-      
-      rows.forEach(row => {
-        const text = row.innerText.toLowerCase();
-        const rowCategory = row.getAttribute("data-category");
-        
-        if ((text.includes(search) || search === "") && (category === "all" || rowCategory === category)) {
-          row.style.display = "";
-        } else {
-          row.style.display = "none";
-        }
-      });
-    }
-
-    function toggleQuery(id) {
-      const queryRow = document.getElementById(id);
-      queryRow.style.display = queryRow.style.display === "table-row" ? "none" : "table-row";
-    }
-
-    function copyToClipboard(id) {
-      const text = document.getElementById(id).innerText;
-      navigator.clipboard.writeText(text).then(() => {
-        alert("Query copied to clipboard!");
-      });
-    }
-  </script>
 </body>
 </html>
