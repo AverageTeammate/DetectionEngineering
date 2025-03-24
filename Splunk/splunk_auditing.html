@@ -44,7 +44,33 @@
 | timechart span=1m count by savedsearch_name limit=200</pre>
         </td>
       </tr>
-
+      <tr data-category="health">
+        <td>⏱️ Health Checks</td>
+        <td>Average Run time of scheduled correlation searches</td>
+        <td><button class="expand-btn" onclick="toggleQuery('q5')">View</button></td>
+      </tr>
+      <tr class="query-row" id="q5">
+        <td colspan="3">
+          <button class="copy-btn" onclick="copyToClipboard('query5')">Copy</button>
+          <pre id="query5">index=_audit   sourcetype=audittrail (host=YOURHOST* OR host=YOUROTHERHOST* ) savedsearch_name!="" action=search app=SplunkEnterpriseSecuritySuite NOT info=granted (savedsearch_name="access *" OR savedsearch_name="endpoint *" OR savedsearch_name="threat *" OR savedsearch_name="network *" OR savedsearch_name="identity *" OR savedsearch_name="audit *")
+| stats  avg(total_run_time) as avg_runtime, count(eval(info="bad_request")) as bad_request, count(eval(info="failed")) as failed, count(eval(info="completed")) as completed,by savedsearch_name 
+| eval avg_runtime=round(avg_runtime,2)
+| timechart avg(total_run_time)</pre>
+        </td>
+      </tr>
+      <tr data-category="health">
+        <td>⏱️ Health Checks</td>
+        <td>Simply list all enabled searches and their Cron Schedule</td>
+        <td><button class="expand-btn" onclick="toggleQuery('q6')">View</button></td>
+      </tr>
+      <tr class="query-row" id="q6">
+        <td colspan="3">
+          <button class="copy-btn" onclick="copyToClipboard('query6')">Copy</button>
+          <pre id="query6">index=_audit   sourcetype=audittrail (host=YOURHOST* OR host=YOUROTHERHOST* ) savedsearch_name!="" action=search app=SplunkEnterpriseSecuritySuite NOT info=granted (savedsearch_name="access *" OR savedsearch_name="endpoint *" OR savedsearch_name="threat *" OR savedsearch_name="network *" OR savedsearch_name="identity *" OR savedsearch_name="audit *")
+| stats  avg(total_run_time) as avg_runtime, count(eval(info="bad_request")) as bad_request, count(eval(info="failed")) as failed, count(eval(info="completed")) as completed,by savedsearch_name 
+| eval avg_runtime=round(avg_runtime,2)</pre>
+        </td>
+      </tr>
       <!-- Notable Events -->
       <tr data-category="notable">
         <td>🔥 Notable Events</td>
