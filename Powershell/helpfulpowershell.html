@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="shortcut icon" type="image/x-icon" href="../images/private-detective.png">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Powershell scripts</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="header">
+    <h1>Powershell scripts</h1>
+    <a href="Powershell.html" class="back-btn">← Back to Categories</a>
+  </div>
+
+  <div class="search-container">
+    <input type="text" id="searchBar" placeholder="🔍 Search scripts..." onkeyup="filterQueries()">
+    <select id="filterCategory" onchange="filterQueries()">
+      <option value="all">All Categories</option>
+      <option value="misc">misc</option>
+    </select>
+  </div>
+
+  <table class="query-table">
+    <thead>
+      <tr>
+        <th>Category</th>
+        <th>Description</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="queryTableBody">
+      <tr data-category="misc">
+        <td>👤 Loop through a csv list of username against AD for specific properties</td>
+        <td>Average Run time of scheduled correlation searches</td>
+        <td><button class="expand-btn" onclick="toggleQuery('q5')">View</button></td>
+      </tr>
+      <tr class="query-row" id="q5">
+        <td colspan="3">
+          <button class="copy-btn" onclick="copyToClipboard('query5')">Copy</button>
+          <pre id="query5">
+# Import the Active Directory module
+Import-Module ActiveDirectory
+
+# Path to the CSV file
+$csvFilePath = "mypath.csv"
+
+# Path to export the results CSV file
+$outputCsvFilePath = "location.csv"
+
+# Import the CSV file
+#$csvData = Import-Csv -Path $csvFilePath
+$csvData = Get-Content -Path $csvFilePath | ConvertFrom-Csv
+
+# Initialize an array to store the results
+$results = @()
+
+# Loop through each row in the CSV
+foreach ($row in $csvData) {
+    # Get the SamAccountName from the first column of the CSV
+    $Name = $row.SamAccountName
+
+    # Check if the user exists in Active Directory
+    $adUser = Get-ADUser -Filter "SamAccountName -eq '$Name'" -Properties * | select SamAccountName, userPrincipalName, department, employeeType, @{N='lastLogonTimestamp'; E={[DateTime]::FromFileTime($_.LastLogonTimestamp)}}
+
+    if ($adUser) {
+        # If the user exists, add their information to the results array
+        $results += [PSCustomObject]@{
+            Domain = $row.Domain
+            groupId = $row.groupId
+            weakPassword = $row.weakPassword
+            stale_account = $row.stale_account
+            Duplicate_Password = $row.DUPLICATE_PASSWORD
+            SamAccountName = $adUser.SamAccountName
+            PrimaryAddress = $adUser.userPrincipalName
+            department = $adUser.department
+            EmployeeType = $adUser.employeeType
+            LastLogonTimestamp = $adUser.lastLogonTimestamp
+            # Add other properties from the original CSV here if needed
+            # For example: Property1 = $row.Property1
+        }
+    } else {
+        Write-Host "User '$Name' not found in Active Directory."
+    }
+}
+
+# Export the results to a new CSV file
+$results | Export-Csv -Path $outputCsvFilePath -NoTypeInformation
+
+          </pre>
+        </td>
+      </tr>
+      <!-- Authentication -->
+      <tr data-category="misc">
+        <td>🔍 Search Event Logs for key words</td>
+        <td>Scrub through windows event logs for key words</td>
+        <td><button class="expand-btn" onclick="toggleQuery('q4')">View</button></td>
+      </tr>
+      <tr class="query-row" id="q4">
+        <td colspan="3">
+          <button class="copy-btn" onclick="copyToClipboard('query4')">Copy</button>
+          <pre id="query4">
+# Define the keyword you want to search for
+$keyword = "InsertKeyWordHere"
+
+# Get all available log names
+$logNames = Get-WinEvent -ListLog *
+
+# Loop through each log and search for the specified keyword
+foreach ($log in $logNames) {
+    Write-Output "Searching in $($log.LogName) log..."
+    try {
+        $events = Get-WinEvent -LogName $log.LogName | Where-Object { $_.Message -like "*$keyword*" }
+        foreach ($event in $events) {
+            $event | Format-List -Property *
+        }
+    } catch {
+        Write-Output "Could not access log: $($log.LogName)"
+    }
+} 
+          </pre>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <script>
+    function filterQueries() {
+      const search = document.getElementById("searchBar").value.toLowerCase();
+      const category = document.getElementById("filterCategory").value;
+      const rows = document.querySelectorAll(".query-table tbody tr");
+      
+      rows.forEach(row => {
+        const text = row.innerText.toLowerCase();
+        const rowCategory = row.getAttribute("data-category");
+        
+        if ((text.includes(search) || search === "") && (category === "all" || rowCategory === category)) {
+          row.style.display = "";
+        } else {
+          row.style.display = "none";
+        }
+      });
+    }
+
+    function toggleQuery(id) {
+      const queryRow = document.getElementById(id);
+      queryRow.style.display = queryRow.style.display === "table-row" ? "none" : "table-row";
+    }
+
+    function copyToClipboard(id) {
+      const text = document.getElementById(id).innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        alert("Query copied to clipboard!");
+      });
+    }
+  </script>
+</body>
+</html>
