@@ -4,8 +4,9 @@
   <link rel="shortcut icon" type="image/x-icon" href="../images/private-detective.png">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="PowerShell scripts for Active Directory enrichment and Windows event log searches.">
   <title>Powershell scripts</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="../style.css">
 </head>
 <body>
   <div class="header">
@@ -32,7 +33,7 @@
     <tbody id="queryTableBody">
       <tr data-category="misc">
         <td>👤 Loop through a csv list of username against AD for specific properties</td>
-        <td>Average Run time of scheduled correlation searches</td>
+        <td>Enrich a CSV of accounts (such as the FalconPy duplicate-password export) with Active Directory details and write the results to a new CSV</td>
         <td><button class="expand-btn" onclick="toggleQuery('q5')">View</button></td>
       </tr>
       <tr class="query-row" id="q5">
@@ -124,35 +125,6 @@ foreach ($log in $logNames) {
     </tbody>
   </table>
 
-  <script>
-    function filterQueries() {
-      const search = document.getElementById("searchBar").value.toLowerCase();
-      const category = document.getElementById("filterCategory").value;
-      const rows = document.querySelectorAll(".query-table tbody tr");
-      
-      rows.forEach(row => {
-        const text = row.innerText.toLowerCase();
-        const rowCategory = row.getAttribute("data-category");
-        
-        if ((text.includes(search) || search === "") && (category === "all" || rowCategory === category)) {
-          row.style.display = "";
-        } else {
-          row.style.display = "none";
-        }
-      });
-    }
-
-    function toggleQuery(id) {
-      const queryRow = document.getElementById(id);
-      queryRow.style.display = queryRow.style.display === "table-row" ? "none" : "table-row";
-    }
-
-    function copyToClipboard(id) {
-      const text = document.getElementById(id).innerText;
-      navigator.clipboard.writeText(text).then(() => {
-        alert("Query copied to clipboard!");
-      });
-    }
-  </script>
+  <script src="../app.js"></script>
 </body>
 </html>

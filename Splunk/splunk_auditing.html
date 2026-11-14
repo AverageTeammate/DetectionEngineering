@@ -4,8 +4,9 @@
   <link rel="shortcut icon" type="image/x-icon" href="../images/private-detective.png">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Splunk searches for correlation search health, notable event trends, and RBA activity.">
   <title>Splunk Auditing & Health Checks</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="../style.css">
 </head>
 <body>
   <div class="header">
@@ -54,21 +55,19 @@
         <td colspan="3">
           <button class="copy-btn" onclick="copyToClipboard('query5')">Copy</button>
           <pre id="query5">index=_audit   sourcetype=audittrail (host=YOURHOST* OR host=YOUROTHERHOST* ) savedsearch_name!="" action=search app=SplunkEnterpriseSecuritySuite NOT info=granted (savedsearch_name="access *" OR savedsearch_name="endpoint *" OR savedsearch_name="threat *" OR savedsearch_name="network *" OR savedsearch_name="identity *" OR savedsearch_name="audit *")
-| stats  avg(total_run_time) as avg_runtime, count(eval(info="bad_request")) as bad_request, count(eval(info="failed")) as failed, count(eval(info="completed")) as completed,by savedsearch_name 
-| eval avg_runtime=round(avg_runtime,2)
-| timechart avg(total_run_time)</pre>
+| timechart avg(total_run_time) as avg_runtime</pre>
         </td>
       </tr>
       <tr data-category="health">
         <td>⏱️ Health Checks</td>
-        <td>Simply list all enabled searches and their Cron Schedule</td>
+        <td>Run stats per scheduled correlation search: average runtime plus completed, failed, and bad_request counts</td>
         <td><button class="expand-btn" onclick="toggleQuery('q6')">View</button></td>
       </tr>
       <tr class="query-row" id="q6">
         <td colspan="3">
           <button class="copy-btn" onclick="copyToClipboard('query6')">Copy</button>
           <pre id="query6">index=_audit   sourcetype=audittrail (host=YOURHOST* OR host=YOUROTHERHOST* ) savedsearch_name!="" action=search app=SplunkEnterpriseSecuritySuite NOT info=granted (savedsearch_name="access *" OR savedsearch_name="endpoint *" OR savedsearch_name="threat *" OR savedsearch_name="network *" OR savedsearch_name="identity *" OR savedsearch_name="audit *")
-| stats  avg(total_run_time) as avg_runtime, count(eval(info="bad_request")) as bad_request, count(eval(info="failed")) as failed, count(eval(info="completed")) as completed,by savedsearch_name 
+| stats  avg(total_run_time) as avg_runtime, count(eval(info="bad_request")) as bad_request, count(eval(info="failed")) as failed, count(eval(info="completed")) as completed by savedsearch_name 
 | eval avg_runtime=round(avg_runtime,2)</pre>
         </td>
       </tr>
@@ -118,35 +117,6 @@
     </tbody>
   </table>
 
-  <script>
-    function filterQueries() {
-      const search = document.getElementById("searchBar").value.toLowerCase();
-      const category = document.getElementById("filterCategory").value;
-      const rows = document.querySelectorAll(".query-table tbody tr");
-      
-      rows.forEach(row => {
-        const text = row.innerText.toLowerCase();
-        const rowCategory = row.getAttribute("data-category");
-        
-        if ((text.includes(search) || search === "") && (category === "all" || rowCategory === category)) {
-          row.style.display = "";
-        } else {
-          row.style.display = "none";
-        }
-      });
-    }
-
-    function toggleQuery(id) {
-      const queryRow = document.getElementById(id);
-      queryRow.style.display = queryRow.style.display === "table-row" ? "none" : "table-row";
-    }
-
-    function copyToClipboard(id) {
-      const text = document.getElementById(id).innerText;
-      navigator.clipboard.writeText(text).then(() => {
-        alert("Query copied to clipboard!");
-      });
-    }
-  </script>
+  <script src="../app.js"></script>
 </body>
 </html>

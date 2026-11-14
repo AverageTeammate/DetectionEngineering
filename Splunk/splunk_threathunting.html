@@ -4,8 +4,9 @@
   <link rel="shortcut icon" type="image/x-icon" href="../images/private-detective.png">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Splunk threat hunting SPL for authentication failures, lockouts, and GlobalProtect sign-ins.">
   <title>Splunk Threat Hunting</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="../style.css">
 </head>
 <body>
   <div class="header">
@@ -41,7 +42,7 @@
         <td colspan="3">
           <button class="copy-btn" onclick="copyToClipboard('query4')">Copy</button>
           <pre id="query4">index IN ($your.windows.index$) sourcetype=WinEventLog EventCode=4625 OR EventCode=4740
-| eval lockout_user=if((EventCode="4740"),user,0),failed_user=if((EventCode="4625"),user,0)
+| eval lockout_user=if((EventCode="4740"),user,null()),failed_user=if((EventCode="4625"),user,null())
 | timechart span=1h dc(lockout_user) as lockout, dc(failed_user) as failure</pre>
         </td>
       </tr>
@@ -68,35 +69,6 @@
     </tbody>
   </table>
 
-  <script>
-    function filterQueries() {
-      const search = document.getElementById("searchBar").value.toLowerCase();
-      const category = document.getElementById("filterCategory").value;
-      const rows = document.querySelectorAll(".query-table tbody tr");
-      
-      rows.forEach(row => {
-        const text = row.innerText.toLowerCase();
-        const rowCategory = row.getAttribute("data-category");
-        
-        if ((text.includes(search) || search === "") && (category === "all" || rowCategory === category)) {
-          row.style.display = "";
-        } else {
-          row.style.display = "none";
-        }
-      });
-    }
-
-    function toggleQuery(id) {
-      const queryRow = document.getElementById(id);
-      queryRow.style.display = queryRow.style.display === "table-row" ? "none" : "table-row";
-    }
-
-    function copyToClipboard(id) {
-      const text = document.getElementById(id).innerText;
-      navigator.clipboard.writeText(text).then(() => {
-        alert("Query copied to clipboard!");
-      });
-    }
-  </script>
+  <script src="../app.js"></script>
 </body>
 </html>

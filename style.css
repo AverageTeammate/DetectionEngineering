@@ -1,27 +1,25 @@
-/* Global Styles */
+/* ==========================================================================
+   Global styles (shared by every page on the site)
+   ========================================================================== */
 body {
   margin: 0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-color: #111;
   color: #eee;
+  overflow-x: hidden;
 }
 
 /* Header */
 .header {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
   align-items: center;
+  gap: 15px;
   padding: 30px 20px;
   background: #1e1e1e;
   color: #66d9ef;
-  text-align: center;
+  flex-wrap: wrap;
 }
-
-.header .back-btn {
-  align-self: flex-end;
-  margin-top: -40px;
-}
-
 
 .back-btn {
   text-decoration: none;
@@ -37,71 +35,9 @@ body {
   background: #222;
 }
 
-/* Card Layout */
-.card-grid {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 40px;
-  padding: 50px 20px;
-  max-width: 800px;
-  margin: 0 auto;
-}
-
-
-.card {
-  background-color: #1e1e1e;
-  border: 1px solid #333;
-  border-radius: 10px;
-  padding: 20px;
-  color: #eee;
-  position: relative;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  text-align: center;
-}
-
-.card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 20px rgba(102, 217, 239, 0.1);
-}
-
-.card details summary {
-  cursor: pointer;
-  font-size: 1.2rem;
-  color: #66d9ef;
-  margin-bottom: 10px;
-  outline: none;
-}
-
-.card pre {
-  background: #111;
-  padding: 10px;
-  border-radius: 6px;
-  overflow-x: auto;
-  margin-top: 10px;
-  font-size: 0.9rem;
-  white-space: pre-wrap;
-}
-
-.copy-btn {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  background: #007bff;
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.8rem;
-  transition: background 0.2s ease;
-}
-
-.copy-btn:hover {
-  background: #0056b3;
-}
-
-/* Landing Page Hero */
+/* ==========================================================================
+   Landing page
+   ========================================================================== */
 .hero {
   background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
   padding: 80px 20px;
@@ -119,6 +55,39 @@ body {
   color: #ddd;
 }
 
+.hero .hero-role {
+  font-size: 1.6rem;
+  color: #66d9ef;
+  margin: 0 0 10px;
+}
+
+.hero-links {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.about {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 50px 20px 10px;
+  text-align: center;
+}
+
+.about h2 {
+  color: #66d9ef;
+  font-size: 2rem;
+  margin-top: 0;
+}
+
+.about p {
+  line-height: 1.7;
+  font-size: 1.1rem;
+  color: #ddd;
+}
+
 .platform-section {
   padding: 40px 20px;
   background-color: #1c1c1c;
@@ -129,6 +98,31 @@ body {
   font-size: 2rem;
   color: #66d9ef;
   margin-bottom: 40px;
+}
+
+.site-footer {
+  text-align: center;
+  padding: 30px 20px;
+  color: #888;
+  font-size: 0.9rem;
+  border-top: 1px solid #333;
+}
+
+.site-footer a {
+  color: #66d9ef;
+}
+
+/* ==========================================================================
+   Category cards (platform pages and landing page)
+   ========================================================================== */
+.card-grid {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 40px;
+  padding: 50px 20px;
+  max-width: 800px;
+  margin: 0 auto;
 }
 
 .platform-grid {
@@ -150,6 +144,11 @@ body {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
+/* Three cards share one row on the landing page */
+.platform-grid .platform-card {
+  width: 230px;
+}
+
 .platform-card img {
   width: 100px;
   height: auto;
@@ -168,15 +167,179 @@ body {
   box-shadow: 0 8px 20px rgba(102, 217, 239, 0.3);
 }
 
-/* Responsive */
-@media (max-width: 500px) {
-  .card-grid {
-    grid-template-columns: 1fr;
-  }
+/* Featured external resource (CrowdStrike CQL Hub page) */
+.card {
+  background-color: #1e1e1e;
+  border: 1px solid #333;
+  border-radius: 10px;
+  padding: 20px;
+  color: #eee;
+  text-align: center;
+}
+
+.feature-card {
+  max-width: 640px;
+  padding: 30px;
+  text-align: left;
+}
+
+.feature-card h2 {
+  margin-top: 0;
+  color: #66d9ef;
+  font-size: 1.4rem;
+}
+
+.feature-card p {
+  line-height: 1.6;
+  color: #ddd;
+}
+
+/* Call-to-action buttons */
+.cta-btn {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 10px 20px;
+  background: #66d9ef;
+  color: #111;
+  font-weight: 600;
+  text-decoration: none;
+  border: 1px solid #66d9ef;
+  border-radius: 6px;
+  transition: background 0.2s ease;
+}
+
+.cta-btn:hover {
+  background: #8fe5f5;
+}
+
+.hero-links .cta-btn {
+  margin-top: 0;
+}
+
+.cta-btn.outline {
+  background: transparent;
+  color: #66d9ef;
+}
+
+.cta-btn.outline:hover {
+  background: rgba(102, 217, 239, 0.12);
+}
+
+/* ==========================================================================
+   Query / script library pages
+   ========================================================================== */
+
+/* Search and filter */
+.search-container {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  padding: 20px;
+  flex-wrap: wrap;
+}
+
+.search-container input,
+.search-container select {
+  background: #222;
+  color: #eee;
+  border: 1px solid #444;
+  padding: 8px;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.search-container input::placeholder {
+  color: #888;
+}
+
+/* Query table */
+.query-table {
+  width: 90%;
+  margin: 20px auto;
+  border-collapse: collapse;
+  background: #1c1c1c;
+  border: 1px solid #333;
+}
+
+.query-table th,
+.query-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #333;
+  word-wrap: break-word;
+}
+
+.query-table th {
+  background: #222;
+  color: #66d9ef;
+}
+
+.query-table tr:hover {
+  background: #2a2a2a;
+}
+
+.expand-btn {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.expand-btn:hover {
+  background: #0056b3;
+}
+
+/* Query expansion */
+.query-row {
+  display: none;
+}
+
+.query-row pre {
+  background: #111;
+  padding: 10px;
+  border-radius: 6px;
+  overflow-x: auto;
+  font-size: 0.9rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-width: 100%;
+}
+
+.copy-btn {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.copy-btn:hover {
+  background: #218838;
+}
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+@media (max-width: 600px) {
   .hero h1 {
     font-size: 2.2rem;
   }
   .hero p {
     font-size: 1.1rem;
+  }
+  .hero .hero-role {
+    font-size: 1.3rem;
+  }
+  .search-container {
+    flex-direction: column;
+    align-items: center;
+  }
+  .query-table {
+    font-size: 0.9rem;
   }
 }

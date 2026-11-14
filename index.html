@@ -4,32 +4,63 @@
   <link rel="shortcut icon" type="image/x-icon" href="images/private-detective.png">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Detection Engineering Toolkit</title>
+  <title>Jacob Cannamela | Detection Engineering Toolkit</title>
+  <meta name="description" content="Jacob Cannamela's detection engineering toolkit: Splunk searches, CrowdStrike scripts, and PowerShell for security operations.">
+  <meta name="author" content="Jacob Cannamela">
+  <meta name="theme-color" content="#0f2027">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Jacob Cannamela | Detection Engineering Toolkit">
+  <meta property="og:description" content="Splunk searches, CrowdStrike scripts, and PowerShell for security operations.">
+  <meta property="og:url" content="https://jacobcannamela.com/">
+  <meta name="twitter:card" content="summary">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="hero">
     <div class="hero-content">
-      <h1>Detection Engineering Toolkit</h1>
-      <p>A collection of helpful queries, scripts, and commands I have created or collected along my journey.</p>
+      <h1>Jacob Cannamela</h1>
+      <p class="hero-role">Detection Engineering Toolkit</p>
+      <p>Queries, scripts, and commands I have built and gathered while working with Splunk, CrowdStrike, and PowerShell.</p>
+      <div class="hero-links">
+        <a class="cta-btn" href="https://www.linkedin.com/in/jacob-cannamela-b0a75b102/" target="_blank" rel="noopener noreferrer">Connect on LinkedIn ↗</a>
+        <a class="cta-btn outline" href="#toolkit">Explore the toolkit</a>
+      </div>
     </div>
   </div>
 
-  <section class="platform-section">
-    <h2 class="section-title">Available Platforms</h2>
+  <section class="about">
+    <h2>About This Toolkit</h2>
+    <p>
+      This is where I keep the detection engineering work I reach for most: Splunk searches for
+      correlation search health and threat hunting, CrowdStrike FalconPy scripts, and PowerShell for
+      Active Directory and Windows event logs. Everything uses placeholders for environment-specific
+      values, so it can be dropped into any environment.
+    </p>
+  </section>
+
+  <section class="platform-section" id="toolkit">
+    <h2 class="section-title">Explore the Toolkit</h2>
     <div class="platform-grid">
       <a class="platform-card" href="Splunk/splunk.html">
         <img src="images/SplunkEmblem.png" alt="Splunk Logo">
         <h3>Splunk</h3>
-        <p>SIEM queries, threat hunting techniques, dashboards</p>
+        <p>Correlation search health checks, notable and RBA trends, and threat hunting SPL</p>
       </a>
       <a class="platform-card" href="CrowdStrike/crowdstrike.html">
         <img src="images/CrowdStrikeEmblem.png" alt="CrowdStrike Logo">
         <h3>CrowdStrike</h3>
-        <p>Falcon detections, Falconpy Scripts</p>
+        <p>FalconPy automation scripts and a curated CQL hunting reference</p>
+      </a>
+      <a class="platform-card" href="Powershell/Powershell.html">
+        <img src="images/powershell.svg" alt="PowerShell terminal icon">
+        <h3>PowerShell</h3>
+        <p>Everyday Active Directory and Windows event log scripts</p>
       </a>
     </div>
   </section>
+
+  <footer class="site-footer">
+    <p>Jacob Cannamela · Detection Engineering · <a href="https://www.linkedin.com/in/jacob-cannamela-b0a75b102/" target="_blank" rel="noopener noreferrer">LinkedIn</a></p>
+  </footer>
 </body>
 </html>
-
